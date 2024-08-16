@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 /**
  * For implement this task focus on clear code, and make this solution as simple readable as possible
@@ -47,8 +49,39 @@ public class DocumentManager {
      */
     public List<Document> search(SearchRequest request) {
 
-        return Collections.emptyList();
+        return documents.values().stream()
+                .filter(document -> {
+                    if (request.getTitlePrefixes() != null && !request.getTitlePrefixes().isEmpty()) {
+                        boolean titleMatch = request.getTitlePrefixes().stream()
+                                .anyMatch(prefix -> document.getTitle().startsWith(prefix));
+                        if (!titleMatch) return false;
+                    }
+
+                    if (request.getContainsContents() != null && !request.getContainsContents().isEmpty()) {
+                        boolean contentMatch = request.getContainsContents().stream()
+                                .anyMatch(content -> document.getContent().contains(content));
+                        if (!contentMatch) return false;
+                    }
+
+                    if (request.getAuthorIds() != null && !request.getAuthorIds().isEmpty()) {
+                        if (!request.getAuthorIds().contains(document.getAuthor().getId())) {
+                            return false;
+                        }
+                    }
+
+                    if (request.getCreatedFrom() != null && request.getCreatedFrom().isAfter(document.getCreated())) {
+                        return false;
+                    }
+
+                    if (request.getCreatedTo() != null && request.getCreatedTo().isBefore(document.getCreated())) {
+                        return false;
+                    }
+
+                    return true;
+                })
+                .collect(Collectors.toList());
     }
+
 
     /**
      * Implementation this method should find document by id
