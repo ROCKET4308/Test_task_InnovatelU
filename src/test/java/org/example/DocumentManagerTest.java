@@ -1,4 +1,4 @@
-package org.test_task;
+package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
