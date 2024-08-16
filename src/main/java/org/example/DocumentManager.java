@@ -91,7 +91,7 @@ public class DocumentManager {
      */
     public Optional<Document> findById(String id) {
 
-        return Optional.empty();
+        return Optional.ofNullable(documents.get(id));
     }
 
     @Data
